@@ -1,0 +1,35 @@
+# Dependencies and generated output
+node_modules/
+dist/
+web-build/
+.expo/
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files and secrets (examples may be committed)
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets/
+**/credentials/
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+
+# Local demo Exit QR tokens are bearer credentials
+backend/demo-data/exit-tokens/
+
+# Local editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

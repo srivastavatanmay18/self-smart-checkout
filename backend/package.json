@@ -1,0 +1,44 @@
+{
+  "name": "self-smart-checkout-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local API foundation for Self Smart Checkout",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "npm run build && npm start",
+    "build": "tsc -p tsconfig.json",
+    "seed:auth": "npm run build && node dist/scripts/seedAuthAccounts.js",
+    "seed:shop": "npm run build && node dist/scripts/seedDemoShop.js",
+    "seed:products": "npm run build && node dist/scripts/seedDemoProducts.js",
+    "seed:exit-tokens": "npm run build && node dist/scripts/seedDemoExitTokens.js",
+    "db:indexes": "npm run build && node dist/scripts/createIndexes.js",
+    "test:auth": "npm run build && node dist/scripts/authFlowCheck.js",
+    "test:shop": "npm run build && node dist/scripts/shopFlowCheck.js",
+    "test:cart": "npm run build && node dist/scripts/productCartFlowCheck.js",
+    "test:checkout": "npm run build && node dist/scripts/checkoutPaymentFlowCheck.js",
+    "test:exit-pass": "npm run build && node dist/scripts/exitPassFlowCheck.js",
+    "test:admin": "npm run build && node dist/scripts/adminPortalFlowCheck.js",
+    "test:e2e": "npm run build && node dist/scripts/endToEndFlowCheck.js",
+    "test:security": "npm run build && node dist/scripts/securityHardeningCheck.js",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.19.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.5.2",
+    "@types/qrcode": "^1.5.6",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
