@@ -29,6 +29,6 @@ function safeErrorName(error: unknown): string {
 }
 
 void start().catch((error: unknown) => {
-  console.error('API startup failed:', safeErrorName(error));
+ console.error("API startup failed:", error);
   process.exitCode = 1;
 });
