@@ -143,7 +143,7 @@ npm install
 
 Start MongoDB Community Server locally, or provide a MongoDB URI through the backend environment. Copy `backend/.env.example` to `backend/.env`; the example points to a local development database and contains no real secrets. Configure a private random `JWT_SECRET` of at least 32 characters. The other backend settings cover `PORT`, `CORS_ORIGINS`, sandbox payment, checkout tax/discount, Exit Pass lifetime, and development-only staff seed accounts. Keep `.env` files private and out of source control.
 
-For production, supply `NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`, and exact HTTPS `CORS_ORIGINS` through the deployment secret/environment manager. Production startup rejects missing or unsafe settings and refuses demo staff passwords. Use a managed/private MongoDB deployment with backups and network restrictions. Never place backend secrets in Expo variables.
+For production, supply `NODE_ENV=production`, `MONGODB_URI`, and `JWT_SECRET` through the deployment secret/environment manager. `CORS_ORIGINS` is only needed for browser clients; native Android requests do not send an `Origin` header. If set in production, it must contain the exact HTTPS origin(s) of the browser frontend. Production startup rejects missing or unsafe settings and refuses demo staff passwords. Use a managed/private MongoDB deployment with backups and network restrictions. Never place backend secrets in Expo variables.
 
 Model-declared unique indexes include user email, shop ID and permanent QR token, product ID and shop/barcode, session ID, order ID and pending-session constraint, Exit Pass identifiers/token hash, and AI verification IDs. Before deployment, run `npm run db:indexes` from `backend` to create declared indexes without dropping existing indexes or deleting documents. If index creation reports duplicates, inspect and resolve those records before deployment; this command does not remove data.
 
@@ -155,6 +155,18 @@ npm run dev
 ```
 
 The API listens on port `4000` by default. `GET /api/health` is a safe liveness response; `GET /api/health/ready` returns HTTP 200 only when MongoDB is connected, otherwise HTTP 503. Neither endpoint returns credentials or user data.
+
+### Render backend deployment preparation
+
+The repository includes a Render Blueprint at [render.yaml](render.yaml). It configures the monorepo service root as `backend`, installs from the backend lockfile, compiles TypeScript, starts the compiled Express server, and uses `/api/health/ready` for database-backed readiness. Automatic deploys are disabled in the Blueprint so connecting the repository does not publish every subsequent commit without an explicit dashboard change. The service is configured on Render's free plan for the hackathon prototype; free instances can sleep and have cold starts.
+
+To deploy, first push this repository to a GitHub repository you control, then in Render choose **New → Blueprint**, connect that repository, and review the detected service before creating it. Render will ask for the private `MONGODB_URI`; paste it directly into Render's secret field. The Blueprint generates `JWT_SECRET`. It sets `NODE_ENV=production`, `PAYMENT_MODE=sandbox`, and the Node runtime. Do not add demo password variables. No `PORT` value is needed: Render supplies it, and the API listens on `0.0.0.0`.
+
+Before creating the Blueprint, ensure MongoDB Atlas has a dedicated application database user and that its network access rules allow connections from the Render service. Prefer a restricted allowlist based on the outbound IPs for the selected Render region/plan or a private networking option supported by your setup; do not broadly allow every IP as a permanent rule. Do not put database credentials in GitHub, this file, mobile Expo variables, or chat. `CORS_ORIGINS` can be omitted for native Android; if a browser client is later deployed, set only its exact HTTPS origin(s). The backend rejects demo staff passwords in production.
+
+After creation, wait for the deployment to become healthy and verify `https://<render-service-domain>/api/health` and `/api/health/ready`. Readiness must return HTTP 200 and `database: "connected"`. If readiness fails, inspect Render's server logs for the safe error category and check the private environment variables and Atlas network access. The app does not automatically seed records in production; run any future seed as a trusted one-off operator task, never by adding demo credentials to the long-running service.
+
+The Render Node service receives a single-instance local rate-limit bucket. Keep it to one instance for the prototype; before scaling horizontally or treating this as production, replace the process-local limiter with shared storage and configure Express to trust only the verified Render proxy path. Do not enable broad proxy trust without confirming the hosting topology.
 
 Seed the demo shop/products and provision staff accounts from `backend/.env`:
 

@@ -10,7 +10,14 @@ if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 }
 
 async function start(): Promise<void> {
-  validateRuntimeConfiguration();
+  try {
+    validateRuntimeConfiguration();
+  } catch (error) {
+    // Runtime validation messages contain only setting names and safe guidance.
+    console.error('Runtime configuration invalid:', error instanceof Error ? error.message : 'Unknown configuration error.');
+    process.exitCode = 1;
+    return;
+  }
   try {
     await connectDatabase(process.env.MONGODB_URI);
   } catch (error) {
@@ -20,7 +27,7 @@ async function start(): Promise<void> {
   }
 
   app.listen(port, '0.0.0.0', () => {
-    console.log(`Self Smart Checkout API listening on http://localhost:${port}`);
+    console.log(`Self Smart Checkout API listening on 0.0.0.0:${port}`);
   });
 }
 
@@ -29,6 +36,6 @@ function safeErrorName(error: unknown): string {
 }
 
 void start().catch((error: unknown) => {
- console.error("API startup failed:", error);
+  console.error('API startup failed:', safeErrorName(error));
   process.exitCode = 1;
 });

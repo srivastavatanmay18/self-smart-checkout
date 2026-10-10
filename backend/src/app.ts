@@ -9,7 +9,8 @@ import { adminRouter } from './routes/adminRoutes.js';
 
 export const app = express();
 
-const allowedOrigins = new Set((process.env.CORS_ORIGINS ?? 'http://localhost:8081,http://127.0.0.1:8081')
+const developmentOrigins = 'http://localhost:8081,http://127.0.0.1:8081';
+const allowedOrigins = new Set((process.env.CORS_ORIGINS ?? (process.env.NODE_ENV === 'production' ? '' : developmentOrigins))
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean));

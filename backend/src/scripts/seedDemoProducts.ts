@@ -72,7 +72,7 @@ async function seedDemoProducts(): Promise<void> {
 
 seedDemoProducts()
   .catch((error: unknown) => {
-    console.error('Could not seed demo products:', error);
+    console.error('Could not seed demo products:', error instanceof Error ? error.name : 'UnknownError');
     process.exitCode = 1;
   })
   .finally(async () => {

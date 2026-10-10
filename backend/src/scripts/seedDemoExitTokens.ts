@@ -271,7 +271,7 @@ async function seedDemoExitTokens(): Promise<void> {
 
 seedDemoExitTokens()
   .catch((error: unknown) => {
-    console.error('Could not seed demo Exit QRs:', error);
+    console.error('Could not seed demo Exit QRs:', error instanceof Error ? error.name : 'UnknownError');
     process.exitCode = 1;
   })
   .finally(async () => {

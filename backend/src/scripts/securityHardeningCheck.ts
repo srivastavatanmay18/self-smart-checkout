@@ -40,11 +40,14 @@ async function runSecurityHardeningCheck(): Promise<void> {
       PAYMENT_MODE: 'sandbox',
     };
     assert.doesNotThrow(() => validateRuntimeConfiguration(safeProductionConfig), 'complete secure production configuration is accepted');
+    assert.doesNotThrow(() => validateRuntimeConfiguration({ ...safeProductionConfig, CORS_ORIGINS: undefined }), 'native-client production config does not require browser CORS origins');
     assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, JWT_SECRET: 'short' }), /JWT_SECRET/);
     assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, DEMO_GUARD_PASSWORD: 'configured' }), /demo staff passwords/);
     assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, CORS_ORIGINS: 'http://localhost:8081' }), /HTTPS origins/);
     assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, PAYMENT_MODE: 'live' }), /sandbox payment only/);
     assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, MONGODB_URI: '' }), /missing required variables/);
+    assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, MONGODB_URI: 'mongodb+srv://mongo.example.invalid:27017/self-smart-checkout' }), /must not include an explicit port/);
+    assert.throws(() => validateRuntimeConfiguration({ ...safeProductionConfig, MONGODB_URI: 'mongodb:///' }), /MONGODB_URI/);
 
     await mongoose.connect(uri);
     await Shop.create([

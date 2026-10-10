@@ -50,7 +50,7 @@ async function seedAuthAccounts(): Promise<void> {
 
 seedAuthAccounts()
   .catch((error: unknown) => {
-    console.error('Could not seed authentication accounts:', error);
+    console.error('Could not seed authentication accounts:', error instanceof Error ? error.name : 'UnknownError');
     process.exitCode = 1;
   })
   .finally(async () => {
